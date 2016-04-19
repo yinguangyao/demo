@@ -216,6 +216,7 @@ section.second .box:hover img{
 	color: #aba6a5;
 	background: #fff url("task7/icon.jpg") no-repeat scroll right 10px center;
 	padding-right: 20px;
+	text-indent:8px;
 }
 
 #main .fourth .fourth-info2 select:hover {
