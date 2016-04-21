@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+		div{
+			margin:25px 10px;
+		}
+			.first{
+				width:800px;
+				height:200px;
+				border:1px solid gray;
+				display:flex;
+				margin:20px auto;
+			}
+			
+			.second,.third,.fourth{
+				border:1px solid gray;
+				flex:1;
+				
+			}
+			.second,.third{
+				display:flex;
+			}
+			form{
+				margin:0 auto;
+				width:200px;
+				height:50px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="first">
+			<div class="second">
+				<div class="third"><div class="fourth"></div>
+				<div class="fourth"></div></div>
+				<div class="third"><div class="fourth"></div>
+				<div class="fourth"></div></div>
+			</div>
+			<div class="second">
+				<div class="third"><div class="fourth"></div>
+				<div class="fourth"></div></div>
+				<div class="third"><div class="fourth"></div>
+				<div class="fourth"></div></div>
+			</div>
+			
+		</div>
+		<form>
+		<input type="button" value="前序遍历" id="pre"  />
+		<input type="button" value="中序遍历" id="mid"  />
+		<input type="button" value="后序遍历" id="post"  />
+		</form>
+		<script src="task22.js">
+	
+		</script>
+	</body>
+</html>
