@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>jQuery标签切换效果</title>
+		<link rel="stylesheet" type="text/css">
+		<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		#demo{
+			width:1200px;
+			height:600px;
+			margin:0 auto;
+			
+				overflow:hidden;
+		}
+		
+		#small{
+			width:200px;
+			height:200px;
+			top:100px;
+			position:relative;
+			z-index:1;
+		    overflow:hidden;
+			}
+			#mark{
+			position:absolute;
+			width:200px;
+			height:200px;
+			z-index:20;
+			background: rgba(200,200,200,0.1);
+		}
+			#big{
+				margin-top:-100px;
+				margin-left:500px;
+				position:relative;
+				width:300px;
+				height:300px;
+				display:none;
+				
+				overflow:hidden;
+			}
+			#float{
+				position:absolute;
+				z-index:10;
+				width:50px;
+				height:50px;
+				background:rgba(250,250,0,0.7);
+				display:none;
+				
+			}
+			img{
+				display:block;
+				position:absolute;
+				
+				
+			}
+		</style>
+	</head>
+
+	<body>
+<div id="demo">
+	<div id="small">
+		<div id="mark"></div>
+		<div id="float"></div>
+		<img src="small.jpg" alt="" />
+	</div>
+	<div id="big">
+	<img src="big.jpg" alt="" /></div>
+</div>
+
+		<script src="jquery-1.12.3.min.js" ></script>
+		<script>
+		$(function(){
+			var mark=$("#mark");
+		var demo=$("#demo");
+			var small=$("#small");
+			var float=$("#float");
+			var big=$("#big");
+			var img1=$("#small > img");
+			var img2=$("#big > img");
+			mark.on("mouseenter",function(){
+				float.css("display","block");
+				big.css("display","block");
+			});
+			mark.on("mouseleave",function(){
+				float.css("display","none");
+				big.css("display","none");
+			});
+			mark.on("mousemove",function(e){
+				var left=e.clientX-float.width()/2-demo.position().left-small.position().left;
+				var top=e.clientY-float.height()/2-demo.position().top-small.position().top;
+				if(left<0){
+					left=0;
+				}else if(left>(small.width()-float.width())){
+					left=small.width()-float.width();
+				}
+				if(top<0){
+					top=0;
+				}else if(top>(small.height()-float.height())){
+					top=small.height()-float.height();
+				}
+				float.css({"left":left+"px",
+				"top":top+"px"});
+				
+				var x=left/(small.width()-float.width());
+				var y=top/(small.height()-float.height());
+				
+				var offsetX=x*(big.width()-img2.width())+"px";
+				var offsetY=y*(big.height()-img2.height())+"px"; 
+				img2.css({
+					"left":offsetX,
+					"top":offsetY
+				});
+			});
+			});
+		</script>
+	</body>
+
+</html>
