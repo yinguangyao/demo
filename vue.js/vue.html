@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<link href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		#app {
+			width: 400px;
+			margin: 0 auto;
+		}
+		
+		.form-control {
+			width: 200px!important;
+		}
+		
+		.form-inline {
+			margin-bottom: 20px;
+		}
+	</style>
+
+	<body>
+		<div id="app">
+			<label for="search">Search:</label>
+			<input type="text" class="form-control" v-model="search" />
+			<child :cdata="pdata" :clist="list" :csearch="search"></child>
+			<button class="btn btn-primary" data-toggle="modal" data-target="#myModal" @click="openCreate">创建</button>
+		</div>
+
+		<template id="test">
+			<table collspacing="0" class="table table-striped">
+				<thead>
+					<tr>
+						<th v-for="item in clist">{{item.name}}</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(index,data) in cdata | filterBy csearch">
+						<td v-for="item in clist">
+							<span v-if="item.isKey" data-toggle="modal" data-target="#myModal"><a href="javascript:;" @click="edit(index,'edit'+data[item.name])">{{data[item.name]}}</a></span>
+							<span v-else>{{data[item.name]}}</span></td>
+						<td><button class="btn btn-warning" @click="move(index)">删除</button></td>
+					</tr>
+				</tbody>
+			</table>
+			<modal :list-name="clist" :item="item" :title="title" :mode="mode" :index="index"></modal>
+		</template>
+		<template id="dialog">
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+							<h4 class="modal-title" id="myModalLabel">
+               {{title}}
+            </h4>
+						</div>
+						<div class="modal-body">
+							<form class="form-inline" v-for="i in listName" role="form">
+								<form class="form-group">
+									<label for="{{i.name}}" class="control-label col-sm-2">{{i.name}}</label>
+									<select class="form-control" v-if="i.dataSource" v-model="item[i.name]" :disabled="mode==2&&i.isKey">
+										<option v-for="opt in i.dataSource" :value="opt">{{opt}}</option>
+									</select>
+									<input v-else type="text" class="form-control" id="{{i.name}}" v-model="item[i.name]" :disabled="mode==2&&i.isKey" />
+								</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal" @click="close">关闭
+            </button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal" @click="submit">
+               提交
+            </button>
+						</div>
+						</form>
+						<!-- /.modal-content -->
+					</div>
+					<!-- /.modal -->
+		</template>
+	</body>
+	<script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<!--<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.7/vue.min.js"></script>   -->
+	<script type="text/javascript" src="js/vue.min.js"></script>
+	<script>
+		new Vue({
+			el: "#app",
+			data: {
+				pdata: [{
+					name: 'Jack',
+					age: 30,
+					sex: 'Male'
+				}, {
+					name: 'Bill',
+					age: 26,
+					sex: 'Male'
+				}, {
+					name: 'Tracy',
+					age: 22,
+					sex: 'Female'
+				}, {
+					name: 'Chris',
+					age: 36,
+					sex: 'Male'
+				}],
+				list: [{
+					name: "name",
+					isKey: true
+				}, {
+					name: "age"
+				}, {
+					name: "sex",
+					dataSource: ['Male', 'Female']
+				}],
+				search: ""
+			},
+			components: {
+				"child": {
+					template: "#test",
+					props: {
+						cdata: Array,
+						clist: Array,
+						csearch: String
+					},
+					data: function() {
+						return {
+							title: "",
+							item: {},
+							mode: 1,
+							index: 0
+						}
+					},
+					methods: {
+						move: function(index) {
+							this.cdata.splice(index, 1);
+						},
+						edit: function(index, title) {
+							this.mode = 2;
+							this.title = title;
+							this.item = this.cdata[index];
+							this.index = index;
+						}
+					},
+					components: {
+						"modal": {
+							template: "#dialog",
+							props: {
+								listName: Array,
+								item: Object,
+								title: String,
+								mode: Number,
+								index: Number
+							},
+							methods: {
+								close: function() {
+								if(this.mode==1){
+										this.item = {};
+									}
+									
+								},
+								submit: function() {
+									if(this.mode == 1) {
+										this.$dispatch("add", this.item);
+										this.item = {};
+									} else if(this.mode == 2) {
+										this.$dispatch("modify", this.index, this.item);
+
+									}
+								}
+							}
+						}
+					},
+					events: {
+						"add": function(item) {
+							for(var i = 0; i < this.cdata.length; i++) {//判断主键是否存在
+								if(this.cdata[i].name.toLowerCase() == item.name.toLowerCase()) {
+									alert(item.name + "已存在");
+									return false;
+								}
+							}
+							this.cdata.push(item);
+						},
+						"modify": function(index, item) {
+							this.cdata[index] = item;
+						},
+						"init":function(){
+							this.title="create";
+							this.item={};
+							this.mode=1;
+						}
+					}
+				}
+			},
+			methods: {
+				openCreate: function() {
+					this.$broadcast("init");
+			}
+		}
+			});
+	</script>
+
+</html>
